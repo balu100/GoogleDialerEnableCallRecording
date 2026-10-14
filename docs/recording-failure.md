@@ -20,7 +20,9 @@ The first approved 20-second recording contained silence or noise. Subsequent au
 
 A second approved test ran for the full 20 seconds while audio policy remained in MODE_IN_CALL. It produced 319,680 PCM bytes (19.98 seconds), peak 12,852 and RMS about 1,539.85. The user listened and confirmed **both participants are audible**. Rootless two-sided capture through the real ADB shell is therefore confirmed on this device. This does not grant the same privileges to the clone or verify the clone's Record button and saving flow.
 
-The published bundle has no Shizuku dependency. A standalone unprivileged clone cannot acquire these system audio privileges simply by adding another APK permission declaration. An optional ADB backend is under development to connect manual recording to the confirmed shell audio source. It requires an explicitly started helper; standalone recording without that helper remains unverified.
+The published bundle has no Shizuku or ADB helper dependency. The ADB tool is a separate diagnostic, not the requested product. The goal is a standalone Morphe clone that records without an external helper. A prototype ADB backend was closed after a recording-free test found a shell-to-app Unix-socket denial under this device's SELinux policy.
+
+The user reports that a Morphe clone previously recorded on this same phone without a helper. The available before-fix backup is byte-identical to the inspected 241 clone; it is not an independently identified older working build. The working APK/version and recording conditions still need comparison. A permission denial in the current build does not identify what changed in an unknown earlier build.
 
 ## Reproduce the ADB diagnostic
 

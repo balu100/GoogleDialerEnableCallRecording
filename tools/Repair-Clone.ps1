@@ -23,7 +23,7 @@ try {
     $env:GITHUB_TOKEN = 'local-source-unused'
     & '.\gradlew.bat' ':patches:test' ':patches:verifyCloneDex' '-PlocalMorpheSources=true' '--console=plain' '--no-daemon'
     if ($LASTEXITCODE -ne 0) { throw 'Clone verification failed.' }
-    $taskVersion = (Get-Content -LiteralPath 'gradle.properties' | Where-Object { $_ -match '^version=' }).Substring(8).Trim()
+    $taskVersion = ((Get-Content -LiteralPath 'gradle.properties' | Where-Object { $_ -match '^version\s*=' }) -split '=', 2)[1].Trim()
     Copy-Item -LiteralPath "patches/build/libs/patches-$taskVersion.mpp" -Destination 'dist/google-phone-droidguard-fix-candidate.mpp' -Force
     Write-Output 'Ready: dist/google-phone-droidguard-fix-candidate.mpp and dist/morphe-droidguard-fixed-unsigned.apk'
 } finally {
@@ -32,3 +32,4 @@ try {
         [Environment]::SetEnvironmentVariable($taskName, $taskSavedEnvironment[$taskName], 'Process')
     }
 }
+

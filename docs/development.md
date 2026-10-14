@@ -40,7 +40,7 @@ The standard upstream package build is also available with the [Morphe developme
 
 ## Tests without the original APK
 
-GitHub does not receive the original APK. Four APK-dependent tests use JUnit assumptions to skip when the fixture is absent; the two independent target-selection tests still run. A local run without the APK verified two passing tests and four skips. Full APK and audio verification remain separate checks.
+GitHub does not receive the original APK. Seven APK-dependent tests use JUnit assumptions to skip when the fixture is absent; the two independent target-selection tests still run. With the private fixture, all nine tests passed. Full APK and audio verification remain separate checks.
 
 ## Release workflow
 
@@ -71,3 +71,4 @@ Source files alone are not an installable Morphe source. A ZIP uploaded as one r
 The October 14, 2026 dependency scan still reported upstream advisories in the Node release tooling, including a `braces` denial-of-service issue without an available published fix. These development dependencies are not bundled into the Android patch. Review `npm audit` when maintaining the release toolchain; a full security audit has not been performed.
 
 Preserve the upstream [LICENSE](../LICENSE) and [NOTICE](../NOTICE), and use independent project branding.
+

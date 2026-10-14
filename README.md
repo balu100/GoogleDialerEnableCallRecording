@@ -65,7 +65,7 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 
 The availability override also bypasses the gate's feature flags and Fermat restriction. See the [technical analysis](docs/analysis.md) for its exact scope and remaining conditions.
 
-On the tested HyperOS device, the clone stays running after the DroidGuard repair but its direct recording request is rejected by Android's audio permission checks. A separate ADB test captured both participants during a complete active call, confirmed by playback. Connecting that audio source to the clone is being tested; standalone recording without an ADB helper remains unverified. See [recording failure and ADB test results](docs/recording-failure.md).
+On the tested HyperOS device, the clone stays running after the DroidGuard repair but its direct recording request is rejected by Android's audio permission checks. A separate ADB test captured both participants during a complete active call, confirmed by playback. The ADB tool is a separate diagnostic; the project's goal is a standalone clone that records without an external helper. That standalone result remains unverified. See [recording failure and ADB test results](docs/recording-failure.md).
 
 ## Build
 
@@ -90,3 +90,4 @@ For the standard Gradle build, release workflow and contributing instructions, s
 ## License
 
 See [LICENSE](LICENSE) and [NOTICE](NOTICE). This is an independent patch project using the [Morphe patch framework](https://github.com/MorpheApp/morphe-patcher).
+
