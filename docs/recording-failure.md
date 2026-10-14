@@ -16,9 +16,11 @@ Raw evidence and the focused excerpt remain private under `verification/clone/re
 
 The device's shell package has CAPTURE_AUDIO_OUTPUT, CAPTURE_VOICE_COMMUNICATION_OUTPUT and MODIFY_PHONE_STATE. An explicit ADB diagnostic identifies itself as its actual UID 2000 / `com.android.shell` and can initialize VOICE_CALL. No application identity is impersonated and no permission is granted to the clone.
 
-With the user's approval, a 20-second recording test ran during the call. It produced 304,640 PCM bytes, peak 1210 and RMS about 20.05. The user listened and reported **silence or noise, with no usable speech**. The system's recording event describes the shell track as not silenced, so the result still needs firmware/audio-routing analysis; permissions and a successfully initialized recorder alone do not establish two-sided capture. This test failed the actual audio requirement.
+The first approved 20-second recording contained silence or noise. Subsequent audio-policy timestamps showed that the call ended about 1.7 seconds after capture began. That interrupted test was inconclusive.
 
-Shizuku in ADB mode would use the same shell privilege level. Its installation alone is therefore not a demonstrated solution to this failed audio route. The published patch bundle has no Shizuku dependency. A standalone unprivileged clone cannot acquire these system audio privileges simply by adding another APK permission declaration.
+A second approved test ran for the full 20 seconds while audio policy remained in MODE_IN_CALL. It produced 319,680 PCM bytes (19.98 seconds), peak 12,852 and RMS about 1,539.85. The user listened and confirmed **both participants are audible**. Rootless two-sided capture through the real ADB shell is therefore confirmed on this device. This does not grant the same privileges to the clone or verify the clone's Record button and saving flow.
+
+The published bundle has no Shizuku dependency. A standalone unprivileged clone cannot acquire these system audio privileges simply by adding another APK permission declaration. An optional ADB backend is under development to connect manual recording to the confirmed shell audio source. It requires an explicitly started helper; standalone recording without that helper remains unverified.
 
 ## Reproduce the ADB diagnostic
 
@@ -34,4 +36,4 @@ The Windows script needs an authorized USB-connected device, an Android SDK and 
 
 The explicit record command writes `google-phone-audio-test-*.wav` in the phone's Download directory and retrieves it into the ignored verification directory. The script removes its temporary DEX from the device afterwards. Listening for both participants is the acceptance criterion; successful commands, nonzero samples or a valid WAV header are insufficient.
 
-The original APK, stock Phone, Telecom and telephony services remain intact. No rootless recording solution is claimed for this tested device yet.
+The original APK, stock Phone, Telecom and telephony services remain intact. The independent ADB capture is confirmed; integrated recording, saving and disclosure playback still require separate device tests.

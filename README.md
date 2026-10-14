@@ -4,7 +4,7 @@
 
 Morphe patches for Google Phone's existing manual call recording availability gate and a renamed clone's rejected DroidGuard connection. Diagnostic strings and bytecode validation identify targets without hardcoded obfuscated class or method names. The bundle has no Shizuku dependency.
 
-The patch has been compiled and applied to Google Phone **241.0.991235506** (version code **20129558**). Physical-device recording and capture of both participants' audio still need verification. The patch requires a working call-audio backend and the necessary Android permissions.
+The patch has been compiled and applied to Google Phone **241.0.991235506** (version code **20129558**). A separate rootless ADB test captured both participants on the tested HyperOS phone. Recording through the clone's own Record button still needs verification. The availability patch requires a working call-audio backend and the necessary Android permissions.
 
 ## Install
 
@@ -65,7 +65,7 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 
 The availability override also bypasses the gate's feature flags and Fermat restriction. See the [technical analysis](docs/analysis.md) for its exact scope and remaining conditions.
 
-On the tested HyperOS device, the clone stays running after the DroidGuard repair but its recording request is rejected by Android's audio permission checks. A separate ADB test could open the call-audio source, but playback contained no usable speech. This project does not claim working rootless two-sided recording on that device. See [recording failure and ADB test results](docs/recording-failure.md).
+On the tested HyperOS device, the clone stays running after the DroidGuard repair but its direct recording request is rejected by Android's audio permission checks. A separate ADB test captured both participants during a complete active call, confirmed by playback. Connecting that audio source to the clone is being tested; standalone recording without an ADB helper remains unverified. See [recording failure and ADB test results](docs/recording-failure.md).
 
 ## Build
 
