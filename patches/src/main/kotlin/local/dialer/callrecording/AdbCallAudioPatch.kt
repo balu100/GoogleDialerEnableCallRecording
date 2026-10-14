@@ -69,37 +69,63 @@ val adbCallAudioPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(*listOf("com.google.android.dialer", "com.google.android.dialer.morphe").map {
-        Compatibility(name = if…1708 tokens truncated…ocket accepted = pending.getAndSet(null);
-            if (!recording && accepted != null) try { accepted.close(); } catch (IOException ignored) { }
+        Compatibility(name = if (it.endsWith(".morphe")) "Google Phone (Morphe clone)" else "Google Phone",
+            packageName = it, targets = listOf(AppTarget("241.0.991235506", versionCode = 20129558,
+                description = "Optional ADB test backend; a running authorized helper is required.")))
+    }.toTypedArray())
+    extendWith("extensions/adb-audio.dex")
+    execute {
+        if (packageMetadata.packageName !in setOf("com.google.android.dialer", "com.google.android.dialer.morphe") ||
+            packageMetadata.versionName != "241.0.991235506" || packageMetadata.versionCode != "20129558")
+            throw PatchException("ADB audio: requires the inspected Google Phone 241 APK")
+        val target = Fingerprint(returnType = "V", parameters = emptyList(), custom = { method, definition ->
+            method.name == "<init>" && method.audioCalls().any { it.name == "<init>" && it.parameterTypes == List(5) { "I" } } &&
+                method.implementation!!.instructions.filterIsInstance<WideLiteralInstruction>().map { it.wideLiteral }.toList() == listOf(4L) &&
+                runCatching { validateAudioWrapper(definition) }.isSuccess
+        }).matchAllOrNull().orEmpty().singleOrNull()
+            ?: throw PatchException("ADB audio: missing or ambiguous VOICE_CALL wrapper")
+        val selected = validateAudioWrapper(target.originalClassDef)
+        val definition = target.classDef
+        val field = definition.instanceFields.single()
+        definition.fields.remove(field)
+        field.setType(ADB_RECORDER)
+        definition.fields.add(field)
+        val fieldReference = "${definition.type}->${field.name}:$ADB_RECORDER"
+        selected.forEach { (operation, original) ->
+            val method = definition.methods.single { it.name == original.name && it.parameterTypes == original.parameterTypes }
+            method.removeInstructions(method.implementation!!.instructions.size)
+            val instructions = when (operation) {
+                "<init>" -> """
+                    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+                    new-instance v0, $ADB_RECORDER
+                    invoke-direct {v0}, $ADB_RECORDER-><init>()V
+                    iput-object v0, p0, $fieldReference
+                    return-void
+                """
+                "startRecording" -> """
+                    iget-object p0, p0, $fieldReference
+                    invoke-virtual {p0}, $ADB_RECORDER->start()V
+                    return-void
+                """
+                "stop" -> """
+                    iget-object p0, p0, $fieldReference
+                    invoke-virtual {p0}, $ADB_RECORDER->close()V
+                    return-void
+                """
+                "getRecordingState" -> """
+                    iget-object p0, p0, $fieldReference
+                    invoke-virtual {p0}, $ADB_RECORDER->isRecording()Z
+                    move-result p0
+                    return p0
+                """
+                else -> """
+                    iget-object p0, p0, $fieldReference
+                    invoke-virtual {p0, p1, p2}, $ADB_RECORDER->read([BI)I
+                    move-result p0
+                    return p0
+                """
+            }
+            method.addInstructions(0, instructions.trimIndent())
         }
-    }
-
-    public boolean isRecording() { return recording; }
-
-    public synchronized int read(byte[] buffer, int length) {
-        if (buffer == null || length <= 0 || length > buffer.length || length > 65536 || (length & 1) != 0)
-            throw new IllegalArgumentException("Invalid PCM buffer");
-        if (!recording) return -3; // AudioRecord.ERROR_INVALID_OPERATION
-        try {
-            output.writeInt(2);
-            output.writeInt(length);
-            output.flush();
-            int count = input.readInt();
-            if (count < 0 || count > length || (count & 1) != 0) throw new IOException("Invalid PCM reply");
-            input.readFully(buffer, 0, count);
-            return count;
-        } catch (IOException error) {
-            close();
-            throw new IllegalStateException("ADB audio helper disconnected", error);
-        }
-    }
-
-    public synchronized void close() {
-        recording = false;
-        // EOF is the stop signal. Closing also unblocks the helper and releases its AudioRecord.
-        if (socket != null) try { socket.close(); } catch (IOException ignored) { }
-        socket = null;
-        input = null;
-        output = null;
     }
 }
