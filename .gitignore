@@ -1,0 +1,15 @@
+.gradle/
+.kotlin/
+.tooling/
+**/build/
+/verification/
+/dist/
+node_modules/
+.idea/
+.vscode/
+local.properties
+*.log
+*.zip
+*.apk
+/EnableCallRecordingPatch-GooglePhone-ObfuscationResistant.kt
+/mitirtamossze.txt
