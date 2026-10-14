@@ -1,4 +1,7 @@
 {
+  "name": "google-phone-call-recording-patches",
+  "private": true,
+  "description": "Release automation for the Google Phone call recording patch bundle",
   "devDependencies": {
     "@cleyrop-org/semantic-release-backmerge": "^6.2.0",
     "@MorpheApp/changelog": "git+https://github.com/MorpheApp/changelog.git#bundle",

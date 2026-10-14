@@ -37,14 +37,10 @@ with open(json_path, encoding="utf-8") as f:
     data = json.load(f)
 
 
-def pkg_emoji(pkg):
-    """Return a standard package emoji regardless of the package name."""
-    return "📦"
-
 # Group patches by package; patches with no compatiblePackages are universal.
 # JSON structure: compatiblePackages is a list of objects with
 # { packageName, name, targets: [{ version, isExperimental, description }] }
-by_pkg = {}   # packageName -> { name, emoji, patches, targets }
+by_pkg = {}   # packageName -> { name, patches, targets }
 universal = {}
 
 for patch in data["patches"]:
@@ -60,7 +56,6 @@ for patch in data["patches"]:
         if pkg not in by_pkg:
             by_pkg[pkg] = {
                 "name":    name,
-                "emoji":   pkg_emoji(pkg),
                 "patches": {},
                 "targets": pkg_entry.get("targets", []),
             }
@@ -69,19 +64,14 @@ for patch in data["patches"]:
             by_pkg[pkg]["patches"][patch["name"]] = patch
 
 
-def anchor(name):
-    """Convert a patch name to a GitHub-compatible anchor slug."""
-    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", name.lower())).strip("-")
-
-
 def patches_table(patches):
     """Render a sorted markdown table of patches with name, description, and options."""
+    has_options = any(p.get("options") for p in patches)
     rows = [
-        "| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |",
-        "|----------|----------------|-----------|",
+        "| Patch | Description |" + (" Options |" if has_options else ""),
+        "|---|---|" + ("---|" if has_options else ""),
     ]
     for p in sorted(patches, key=lambda x: x["name"]):
-        a = anchor(p["name"])
         options = p.get("options") or []
         if options:
             # Show only option titles as a bullet list
@@ -90,7 +80,7 @@ def patches_table(patches):
         else:
             opts_cell = ""
         desc = (p.get("description") or "").replace("\n", "<br>")
-        rows.append(f"| [{p['name']}](#{a}) | {desc} | {opts_cell} |")
+        rows.append(f"| {p['name']} | {desc} |" + (f" {opts_cell} |" if has_options else ""))
     return "\n".join(rows)
 
 
@@ -102,12 +92,13 @@ def versions_table(targets):
     if not targets:
         return ""
 
+    versioned_targets = [t for t in targets if t["version"] is not None]
     cells = []
-    for t in targets:
+    for t in versioned_targets:
         ver   = t["version"]
         if ver is None:
             continue
-        label = f"🧪&nbsp;{ver}" if t.get("isExperimental") else ver
+        label = f"{ver} (experimental)" if t.get("isExperimental") else ver
         cells.append(label)
 
     if not cells:
@@ -118,7 +109,7 @@ def versions_table(targets):
     rows = [header, sep]
 
     # Optional description row — only rendered if at least one target has one
-    descs = [(t.get("description") or "").replace("\n", "<br>") for t in targets]
+    descs = [(t.get("description") or "").replace("\n", "<br>") for t in versioned_targets]
     if any(descs):
         rows.append("| " + " | ".join(descs) + " |")
 
@@ -131,7 +122,7 @@ def spoiler(label, count, targets, tbl, expanded=False):
     """
     noun = "patch" if count == 1 else "patches"
     vtbl = versions_table(targets)
-    versions_section = f"**🎯 Supported versions:**\n\n{vtbl}\n\n" if vtbl else ""
+    versions_section = f"**Supported versions:**\n\n{vtbl}\n\n" if vtbl else ""
     tag = "<details open>" if expanded else "<details>"
     return f"""{tag}
 <summary>{label}&nbsp;&nbsp;•&nbsp;&nbsp;{count} {noun}</summary>
@@ -145,16 +136,16 @@ def spoiler(label, count, targets, tbl, expanded=False):
 def build_content(expanded=False):
     """Build the full generated patches section."""
     lines = [
-        f"**[Hozzáadás a Morphe-hoz](https://morphe.software/add-source?github={repo_full})**\n",
+        f"**[Add to Morphe](https://morphe.software/add-source?github={repo_full})**\n",
         f"> **[v{ver}](https://github.com/{owner}/{repo}/releases/tag/v{ver})**"
         f"&nbsp;&nbsp;•&nbsp;&nbsp;`{branch}`&nbsp;&nbsp;•&nbsp;&nbsp;"
-        f"{total} patches total"
+        f"{total} {'patch' if total == 1 else 'patches'} total"
     ]
 
     # One spoiler per app, in the order they appear in the JSON
     for pkg, entry in by_pkg.items():
         patches = list(entry["patches"].values())
-        label   = f"{entry['emoji']} {entry['name']}"
+        label   = entry['name']
         lines.append(spoiler(label, len(patches), entry["targets"], patches_table(patches), expanded))
         lines.append("")
 
@@ -164,7 +155,7 @@ def build_content(expanded=False):
         noun = "patch" if len(uni_patches) == 1 else "patches"
         tag  = "<details open>" if expanded else "<details>"
         lines.append(f"""{tag}
-<summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;{len(uni_patches)} {noun}</summary>
+<summary>Universal&nbsp;&nbsp;•&nbsp;&nbsp;{len(uni_patches)} {noun}</summary>
 <br>
 
 {patches_table(uni_patches)}
@@ -225,4 +216,4 @@ new_readme = re.sub(
     flags=re.DOTALL,
 )
 readme_path.write_text(new_readme, encoding="utf-8")
-print(f"✅ Injected patches section into {readme_path} (v{ver}, branch={branch}, {total} patches, expanded={expanded})")
+print(f"Updated patch section in {readme_path} (v{ver}, branch={branch}, {total} patches, expanded={expanded})")

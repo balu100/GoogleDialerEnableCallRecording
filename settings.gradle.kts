@@ -20,7 +20,7 @@ plugins {
     id("app.morphe.patches") version "1.3.4"
 }
 
-rootProject.name = "local-google-phone-patches"
+rootProject.name = "google-phone-call-recording-patches"
 settings {
     extensions { projectsPath = null }
 }
