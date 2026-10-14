@@ -19,9 +19,9 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 <!-- PATCHES_START EXPANDED -->
 **[Add to Morphe](https://morphe.software/add-source?github=balu100/GoogleDialerEnableCallRecording)**
 
-> **[v1.0.0](https://github.com/balu100/GoogleDialerEnableCallRecording/releases/tag/v1.0.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;1 patch total
+> **[v1.1.0](https://github.com/balu100/GoogleDialerEnableCallRecording/releases/tag/v1.1.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;3 patches total
 <details open>
-<summary>Google Phone&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<summary>Google Phone&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
 
 **Supported versions:**
@@ -33,6 +33,23 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 | Patch | Description |
 |---|---|
 | Enable call recording | Enable the existing manual recording availability gate. Requires a working privileged call-audio backend. |
+| Handle rejected DroidGuard connection | Report a rejected DroidGuard broker connection as DEVELOPER_ERROR instead of crashing a renamed clone. Device testing required. |
+
+</details>
+
+<details open>
+<summary>Google Phone (Morphe clone)&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<br>
+
+**Supported versions:**
+
+| 241.0.991235506 |
+| :---: |
+| Experimental DroidGuard connection failure handling; not a call-audio permission fix. |
+
+| Patch | Description |
+|---|---|
+| Handle rejected DroidGuard connection | Report a rejected DroidGuard broker connection as DEVELOPER_ERROR instead of crashing a renamed clone. Device testing required. |
 
 </details>
 
