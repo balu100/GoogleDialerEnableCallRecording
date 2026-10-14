@@ -170,7 +170,8 @@ def build_content(expanded=False):
 raw_ver = data["version"]
 # Strip leading "v" if present
 ver   = raw_ver.lstrip("v")
-total = sum(len(e["patches"]) for e in by_pkg.values()) + len(universal)
+# A patch supporting the original package and a clone is still one patch.
+total = len({patch["name"] for patch in data["patches"]})
 
 readme = readme_path.read_text(encoding="utf-8")
 
