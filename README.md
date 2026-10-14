@@ -9,8 +9,24 @@ A feltöltés és az első automatikus kiadás lépéseit a [PUBLISHING.md](PUBL
 ## Patchlista
 
 <!-- PATCHES_START EXPANDED -->
+**[Hozzáadás a Morphe-hoz](https://morphe.software/add-source?github=balu100/GoogleDialerEnableCallRecording)**
 
-Az első automatikus kiadás ide generálja a patchlistát és a Morphe hozzáadási hivatkozását.
+> **[v1.0.0](https://github.com/balu100/GoogleDialerEnableCallRecording/releases/tag/v1.0.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;1 patches total
+<details open>
+<summary>📦 Google Phone&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 241.0.991235506 |
+| :---: |
+| APK bytecode validated; physical-device recording still requires testing. |  |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Enable call recording](#enable-call-recording) | Enable the existing manual recording availability gate. Requires a working privileged call-audio backend. |  |
+
+</details>
 
 <!-- PATCHES_END -->
 
