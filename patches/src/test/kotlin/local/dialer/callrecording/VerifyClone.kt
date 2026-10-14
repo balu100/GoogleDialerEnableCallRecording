@@ -74,7 +74,7 @@ fun main(args: Array<String>) {
     println(result)
 }
 
-private fun nonDexHashes(apk: File): Map<String, String> = ZipFile(apk).use { zip ->
+internal fun nonDexHashes(apk: File): Map<String, String> = ZipFile(apk).use { zip ->
     zip.entries().asSequence().filter { !it.isDirectory && !it.name.matches(Regex("classes[0-9]*\\.dex")) &&
         !it.name.startsWith("META-INF/") }.associate { entry -> entry.name to hash(zip.getInputStream(entry).use { it.readBytes() }) }
 }

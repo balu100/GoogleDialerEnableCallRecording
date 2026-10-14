@@ -40,7 +40,9 @@ The standard upstream package build is also available with the [Morphe developme
 
 ## Tests without the original APK
 
-GitHub does not receive the original APK. Four APK-dependent tests use JUnit assumptions to skip when the fixture is absent; the two independent target-selection tests still run. A local run without the APK verified two passing tests and four skips. Full APK and audio verification remain separate checks.
+GitHub does not receive the original APK. Ten APK-dependent tests use JUnit assumptions to skip when the fixture is absent; the two independent target-selection tests still run. With the private fixture, all twelve tests passed. Full APK and audio verification remain separate checks.
+
+The optional ADB extension is compiled against public Android API stubs and embedded as a DEX resource in the patch bundle. The device helper is built separately by `tools/Start-AdbAudio.ps1` using a local Android SDK. See [the experimental backend](adb-audio-backend.md) for its protocol, installation and device-test requirements.
 
 ## Release workflow
 

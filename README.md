@@ -57,8 +57,8 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 
 ## Compatibility and validation
 
-- The verified APK contains 154,756 methods. Each patch was checked separately and changes exactly one method.
-- Nine local tests passed, covering gate validation, incompatible catch semantics and double application of the connection repair.
+- The verified APK contains 154,756 methods. Each released availability/connection patch changes exactly one method. The ADB candidate replaces five recorder methods and adds its transport classes.
+- Twelve local tests passed, covering gate validation, incompatible catch semantics, double application, and the ADB wrapper's audio format.
 - The modified class DEX passed a D8 round trip. This does not replace Android runtime or audio testing.
 - Newer app versions are experimental. The patch refuses ambiguous matches or incompatible bytecode.
 - Call-type checks, audio permissions and the application's recording disclosures remain separate requirements.
@@ -68,6 +68,8 @@ The availability override also bypasses the gate's feature flags and Fermat rest
 On the tested HyperOS device, the clone stays running after the DroidGuard repair but its direct recording request is rejected by Android's audio permission checks. A separate ADB test captured both participants during a complete active call, confirmed by playback. Connecting that audio source to the clone is being tested; standalone recording without an ADB helper remains unverified. See [recording failure and ADB test results](docs/recording-failure.md).
 
 ## Build
+
+An optional **Use ADB call audio (test)** candidate is being developed to connect the manual Record button to the confirmed shell audio source. It requires an explicitly started ADB helper, uses no Shizuku, and still needs integrated device testing. See [candidate setup and scope](docs/adb-audio-backend.md).
 
 The optional **Handle rejected DroidGuard connection** patch repairs the inspected clone's broker failure. See [clone crash diagnosis, installation and testing](docs/clone-crash-repair.md). The failure handler has passed an isolated ART test on a connected device; full call testing and working audio capture are separate requirements.
 

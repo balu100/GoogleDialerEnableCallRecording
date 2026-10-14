@@ -44,8 +44,8 @@ try {
     & (Join-Path $workspace 'gradlew.bat') @tasks '-PlocalMorpheSources=true' '--console=plain' '--no-daemon'
     if ($LASTEXITCODE -ne 0) { throw ('Gradle failed with exit code ' + $LASTEXITCODE) }
     $versionLine = Get-Content -LiteralPath (Join-Path $workspace 'gradle.properties') |
-        Where-Object { $_ -match '^version=' } | Select-Object -First 1
-    $bundleVersion = $versionLine.Substring('version='.Length).Trim()
+        Where-Object { $_ -match '^version\s*=' } | Select-Object -First 1
+    $bundleVersion = ($versionLine -split '=', 2)[1].Trim()
     $distribution = Join-Path $workspace 'dist'
     New-Item -ItemType Directory -Force -Path $distribution | Out-Null
     Copy-Item -LiteralPath (Join-Path $workspace ('patches/build/libs/patches-' + $bundleVersion + '.mpp')) -Destination (Join-Path $distribution ('local-google-phone-patches-' + $bundleVersion + '.mpp')) -Force
