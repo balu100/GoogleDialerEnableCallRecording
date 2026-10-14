@@ -80,7 +80,7 @@ fun main(args: Array<String>) {
     val target = originals.values.single { COUNTRY_DISABLED in it.exactStrings() }
     val bundle = File(args[3])
     ZipFile(bundle).use { check(it.getEntry("classes.dex") != null) { "Bundle has no Android DEX" } }
-    val patches = loadPatchesFromJar(setOf(bundle))
+    val patches = loadPatchesFromJar(setOf(bundle)).filter { it.name == "Enable call recording" }.toSet()
     check(patches.size == 1) { "Expected only the manual recording patch: ${patches.map { it.name }}" }
     val work = output.resolve("patcher-work").canonicalFile
     check(work.toPath().startsWith(output.canonicalFile.toPath()) && work != output.canonicalFile)

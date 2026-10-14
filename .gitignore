@@ -1,6 +1,7 @@
 .gradle/
 .kotlin/
 .tooling/
+.ignore/
 **/build/
 /verification/
 /dist/

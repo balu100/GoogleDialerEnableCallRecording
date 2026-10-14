@@ -50,6 +50,36 @@ tasks.register<JavaExec>("inspectApk") {
     maxHeapSize = "3g"
 }
 
+tasks.register<JavaExec>("inspectClone") {
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("local.dialer.callrecording.InspectCloneKt")
+    args(rootProject.file(".ignore/morphe.apk").absolutePath,
+        rootProject.file("verification/clone").absolutePath)
+    maxHeapSize = "3g"
+}
+
+tasks.register<JavaExec>("repairClone") {
+    dependsOn(tasks.testClasses, "buildAndroid")
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("local.dialer.callrecording.VerifyCloneKt")
+    args(rootProject.file(".ignore/morphe.apk").absolutePath,
+        layout.buildDirectory.file("libs/patches-${project.version}.mpp").get().asFile.absolutePath,
+        rootProject.file("verification/clone").absolutePath,
+        rootProject.file("dist/morphe-droidguard-fixed-unsigned.apk").absolutePath)
+    maxHeapSize = "3g"
+}
+
+tasks.register<JavaExec>("verifyCloneDex") {
+    dependsOn("repairClone")
+    classpath = dexVerifierClasspath
+    mainClass.set("com.android.tools.r8.D8")
+    val output = rootProject.file("verification/clone/d8-roundtrip")
+    doFirst { output.mkdirs() }
+    args("--min-api", "30", "--output", output.absolutePath,
+        rootProject.file("verification/clone/modified-class.dex").absolutePath)
+}
+
 tasks.register<JavaExec>("verifyApk") {
     dependsOn(tasks.testClasses, "buildAndroid")
     classpath = sourceSets["test"].runtimeClasspath

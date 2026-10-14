@@ -40,7 +40,7 @@ try {
     # The root settings remove GitHub Packages for this source-build mode.
     $env:GITHUB_ACTOR = 'local-source-unused'
     $env:GITHUB_TOKEN = 'local-source-unused'
-    $tasks = if ($BuildOnly) { @('buildAndroid') } else { @(':patches:test','buildAndroid',':patches:verifyDex') }
+    [string[]]$tasks = if ($BuildOnly) { @('buildAndroid') } else { @(':patches:test','buildAndroid',':patches:verifyDex') }
     & (Join-Path $workspace 'gradlew.bat') @tasks '-PlocalMorpheSources=true' '--console=plain' '--no-daemon'
     if ($LASTEXITCODE -ne 0) { throw ('Gradle failed with exit code ' + $LASTEXITCODE) }
     $versionLine = Get-Content -LiteralPath (Join-Path $workspace 'gradle.properties') |

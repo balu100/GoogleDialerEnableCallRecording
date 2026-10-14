@@ -2,7 +2,7 @@
 
 [![Release workflow](https://github.com/balu100/GoogleDialerEnableCallRecording/actions/workflows/release.yml/badge.svg)](https://github.com/balu100/GoogleDialerEnableCallRecording/actions/workflows/release.yml)
 
-A Morphe patch that enables Google Phone's existing manual call recording availability gate. It uses diagnostic strings and bytecode validation instead of hardcoded obfuscated class or method names.
+Morphe patches for Google Phone's existing manual call recording availability gate and a renamed clone's rejected DroidGuard connection. Diagnostic strings and bytecode validation identify targets without hardcoded obfuscated class or method names. The bundle has no Shizuku dependency.
 
 The patch has been compiled and applied to Google Phone **241.0.991235506** (version code **20129558**). Physical-device recording and capture of both participants' audio still need verification. The patch requires a working call-audio backend and the necessary Android permissions.
 
@@ -40,15 +40,19 @@ See [device testing and installation](docs/testing.md) for signing, privileged p
 
 ## Compatibility and validation
 
-- The verified APK contains 154,756 methods. Comparing instructions and exception regions found exactly one changed method.
-- Six local tests passed, including rejection of ambiguous targets, conflicting fallback matches and invalid return semantics.
+- The verified APK contains 154,756 methods. Each patch was checked separately and changes exactly one method.
+- Nine local tests passed, covering gate validation, incompatible catch semantics and double application of the connection repair.
 - The modified class DEX passed a D8 round trip. This does not replace Android runtime or audio testing.
 - Newer app versions are experimental. The patch refuses ambiguous matches or incompatible bytecode.
 - Call-type checks, audio permissions and the application's recording disclosures remain separate requirements.
 
 The availability override also bypasses the gate's feature flags and Fermat restriction. See the [technical analysis](docs/analysis.md) for its exact scope and remaining conditions.
 
+On the tested HyperOS device, the clone stays running after the DroidGuard repair but its recording request is rejected by Android's audio permission checks. A separate ADB test could open the call-audio source, but playback contained no usable speech. This project does not claim working rootless two-sided recording on that device. See [recording failure and ADB test results](docs/recording-failure.md).
+
 ## Build
+
+The optional **Handle rejected DroidGuard connection** patch repairs the inspected clone's broker failure. See [clone crash diagnosis, installation and testing](docs/clone-crash-repair.md). The failure handler has passed an isolated ART test on a connected device; full call testing and working audio capture are separate requirements.
 
 On Windows with a suitable JDK:
 
